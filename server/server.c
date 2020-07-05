@@ -84,11 +84,14 @@ int main()
 		exit(0); 
 	} 
 	else
-		printf("server acccept the client...\n"); 
+		printf("server acccept the client...\n");
+	
+	
 
 	// Function for chatting between client and server 
 	func(connfd); 
-
+	
+	
 	// After chatting close the socket 
 	close(sockfd); 
 } 
