@@ -1,30 +1,31 @@
 #include <netdb.h> 
-#include <stdio.h> 
+#include <stdio.h> 		
 #include <stdlib.h> 
 #include <string.h> 
 #include <sys/socket.h> 
-#define MAX 80 
+
+#define MAX 80
 #define PORT 8080 
 #define SA struct sockaddr 
-void func(int sockfd) 
+
+void recvFile(int sockfd) 
 { 
-	char buff[MAX]; 
-	int n; 
-	for (;;) { 
-		bzero(buff, sizeof(buff)); 
-		printf("Enter the string : "); 
-		n = 0; 
-		while ((buff[n++] = getchar()) != '\n') 
-			; 
-		write(sockfd, buff, sizeof(buff)); 
-		bzero(buff, sizeof(buff)); 
-		read(sockfd, buff, sizeof(buff)); 
-		printf("From Server : %s", buff); 
-		if ((strncmp(buff, "exit", 4)) == 0) { 
-			printf("Client Exit...\n"); 
-			break; 
-		} 
-	} 
+	char buff[MAX]; 	// to store message from client
+	
+	FILE *fp;
+	fp=fopen("received.txt","w"); // stores the file content in recieved.txt in the program directory
+	
+	if( fp == NULL ){
+		printf("Error IN Opening File ");
+		return ;
+	}
+	
+	while( read(sockfd,buff,MAX) > 0 )
+		fprintf(fp,"%s",buff);
+	
+	printf("File received successfully !! \n");
+	printf("New File created is received.txt !! \n");
+
 } 
 
 int main() 
@@ -40,6 +41,7 @@ int main()
 	} 
 	else
 		printf("Socket successfully created..\n"); 
+	
 	bzero(&servaddr, sizeof(servaddr)); 
 
 	// assign IP, PORT 
@@ -54,19 +56,10 @@ int main()
 	} 
 	else
 		printf("connected to the server..\n"); 
-	
 
-
-	// function for chat 
-	func(sockfd); 
-	if( connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
-{
-  printf("\n Error : Connect Failed \n");
-  return 1;
-} 
-
+	// function for sending File 
+	recvFile(sockfd); 
 
 	// close the socket 
 	close(sockfd); 
 } 
-
